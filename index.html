@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>เที่ยวทั่วไทย Challenge</title>
+
+<style>
+
+body{font-family:Arial,sans-serif;background:#eaf5ed;color:#174638;margin:0;padding:18px}
+
+main{max-width:650px;margin:auto;background:white;padding:20px;border-radius:20px;box-shadow:0 4px 18px #0002}
+
+h1{text-align:center;color:#12634f}
+
+#photo{width:100%;height:220px;object-fit:cover;border-radius:14px;background:#ddd}
+
+button{width:100%;padding:15px;margin:6px 0;border:0;border-radius:12px;background:#e1f1e7;color:#174638;font-size:17px;font-weight:bold}
+
+button:disabled{opacity:.8}
+
+.primary{background:#16735b;color:white}
+
+#status{text-align:center;font-weight:bold;margin:12px}
+
+</style>
+
+</head>
+
+<body>
+
+<main>
+
+<h1>🇹🇭 เที่ยวทั่วไทย Challenge</h1>
+
+<div id="status">❤️❤️❤️❤️❤️ | คะแนน 0</div>
+
+<div id="progress">ด่าน 1 / 54</div>
+
+<img id="photo" alt="ภาพสถานที่ท่องเที่ยวไทย">
+
+<h2 id="question">ยินดีต้อนรับ</h2>
+
+<div id="choices"></div>
+
+<p id="feedback"></p>
+
+<button class="primary" id="start" onclick="startGame()">เริ่มเกม</button>
+
+<button class="primary" id="next" onclick="nextQuestion()" hidden>ด่านต่อไป</button>
+
+</main>
+
+<script>
+
+const places=[
+
+["วัดพระแก้ว","กรุงเทพมหานคร"],["วัดอรุณราชวราราม","กรุงเทพมหานคร"],
+
+["พระบรมมหาราชวัง","กรุงเทพมหานคร"],["ตลาดน้ำดำเนินสะดวก","ราชบุรี"],
+
+["สะพานข้ามแม่น้ำแคว","กาญจนบุรี"],["อุทยานประวัติศาสตร์อยุธยา","พระนครศรีอยุธยา"],
+
+["วัดมหาธาตุ","พระนครศรีอยุธยา"],["อุทยานประวัติศาสตร์สุโขทัย","สุโขทัย"],
+
+["วัดพระธาตุดอยสุเทพ","เชียงใหม่"],["ดอยอินทนนท์","เชียงใหม่"],
+
+["ประตูท่าแพ","เชียงใหม่"],["วัดร่องขุ่น","เชียงราย"],
+
+["สามเหลี่ยมทองคำ","เชียงราย"],["ภูชี้ฟ้า","เชียงราย"],
+
+["อุทยานแห่งชาติดอยภูคา","น่าน"],["วัดภูมินทร์","น่าน"],
+
+["ภูทับเบิก","เพชรบูรณ์"],["เขาค้อ","เพชรบูรณ์"],
+
+["อุทยานแห่งชาติเขาใหญ่","นครราชสีมา"],["ปราสาทหินพิมาย","นครราชสีมา"],
+
+["ทะเลบัวแดง","อุดรธานี"],["พระธาตุพนม","นครพนม"],
+
+["สามพันโบก","อุบลราชธานี"],["ผาแต้ม","อุบลราชธานี"],
+
+["ปราสาทเขาพนมรุ้ง","บุรีรัมย์"],["เกาะช้าง","ตราด"],
