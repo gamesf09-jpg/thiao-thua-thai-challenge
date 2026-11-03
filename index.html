@@ -12,29 +12,21 @@
 
 <style>
 
-*{box-sizing:border-box}
+body{font-family:sans-serif;background:#fff4df;text-align:center;padding:18px;color:#49351f}
 
-body{margin:0;padding:20px;font-family:Arial,sans-serif;background:linear-gradient(135deg,#dff7ff,#fff1d6);color:#243447;text-align:center}
+main{max-width:520px;margin:auto;background:white;padding:22px;border-radius:20px;box-shadow:0 4px 15px #0002}
 
-main{max-width:650px;margin:auto;background:white;padding:22px;border-radius:22px;box-shadow:0 5px 22px #0002}
+h1{color:#c66b23}
 
-h1{color:#087e8b}
+button{border:0;border-radius:12px;padding:14px;margin:7px;font-size:17px;background:#f4a340;color:#fff;width:90%;cursor:pointer}
 
-.stats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:15px 0;font-weight:bold}
+button:active{opacity:.7}
 
-#photo{width:100%;height:280px;object-fit:cover;border-radius:15px;background:#e8eef0}
+#question{font-size:22px;font-weight:bold;margin:25px 0}
 
-button{border:0;border-radius:12px;padding:14px;margin:6px;font-size:17px;cursor:pointer}
+#status{font-size:18px;margin:15px}
 
-.primary{background:#078b91;color:white;width:90%;font-weight:bold}
-
-.choice{background:#edf5f6;color:#234;width:100%}
-
-.choice:disabled{opacity:.8}
-
-#message{font-weight:bold;min-height:28px;margin:12px}
-
-.small{font-size:13px;color:#667}
+#message{min-height:35px;font-weight:bold}
 
 </style>
 
@@ -46,33 +38,17 @@ button{border:0;border-radius:12px;padding:14px;margin:6px;font-size:17px;cursor
 
 <h1>🇹🇭 เที่ยวทั่วไทย Challenge</h1>
 
-<p>ทายสถานที่ท่องเที่ยวไทยให้ครบ 54 ด่าน!</p>
+<p>ตอบคำถามสถานที่ท่องเที่ยวทั่วไทย</p>
 
-<div class="stats">
+<div id="status">❤️❤️❤️❤️❤️ | คะแนน 0</div>
 
-<span id="stage">ด่าน 1 / 54</span>
+<div id="question">พร้อมออกเดินทางหรือยัง?</div>
 
-<span id="hearts">❤️❤️❤️❤️❤️</span>
-
-<span id="score">คะแนน 0</span>
-
-</div>
-
-<img id="photo" alt="ภาพสถานที่ท่องเที่ยว">
-
-<p id="photoNote" class="small">ภาพสถานที่ท่องเที่ยว</p>
-
-<h3 id="question">กดเริ่มเกมเพื่อเล่น</h3>
-
-<div id="choices"></div>
+<div id="answers"></div>
 
 <div id="message"></div>
 
-<button class="primary" id="start">เริ่มเกม</button>
-
-<button class="primary" id="next" hidden>ข้อต่อไป</button>
-
-<p class="small">เกมจะบันทึกความคืบหน้าไว้ในอุปกรณ์นี้</p>
+<button id="start">เริ่มเกม</button>
 
 </main>
 
@@ -82,81 +58,36 @@ const places = [
 
 ["วัดพระแก้ว","กรุงเทพมหานคร"],
 
+["พระบรมมหาราชวัง","กรุงเทพมหานคร"],
+
+["วัดอรุณราชวราราม","กรุงเทพมหานคร"],
+
+["ตลาดน้ำดำเนินสะดวก","ราชบุรี"],
+
+["สะพานข้ามแม่น้ำแคว","กาญจนบุรี"],
+
+["น้ำตกเอราวัณ","กาญจนบุรี"],
+
+["อุทยานประวัติศาสตร์อยุธยา","พระนครศรีอยุธยา"],
+
+["วัดมหาธาตุ","พระนครศรีอยุธยา"],
+
 ["พระปฐมเจดีย์","นครปฐม"],
 
-["สะพานข้ามแม่น้ำแคว","กาญจนบุรี"],const $ = id => document.getElementById(id);
+["ตลาดร่มหุบ","สมุทรสงคราม"],
 
-let stage = Number(localStorage.getItem("thaiStage") || 0);
+["หาดหัวหิน","ประจวบคีรีขันธ์"],
 
-let score = Number(localStorage.getItem("thaiScore") || 0);
+["อ่าวมะนาว","ประจวบคีรีขันธ์"],
 
-let hearts = 5;
+["เขาสามร้อยยอด","ประจวบคีรีขันธ์"],
 
-let lockedUntil = Number(localStorage.getItem("thaiLock") || 0);
+["เกาะล้าน","ชลบุรี"],
 
-let current = null;
+["ปราสาทสัจธรรม","ชลบุรี"],
 
-let answered = false;
+["เกาะเสม็ด","ระยอง"],
 
-function saveProgress() {
+["เกาะช้าง","ตราด"],
 
-  localStorage.setItem("thaiStage", stage);
-
-  localStorage.setItem("thaiScore", score);
-
-}
-
-function updateStats() {
-
-  $("stage").textContent = `ด่าน ${Math.min(stage + 1, 54)} / 54`;
-
-  $("hearts").textContent = "❤️".repeat(hearts) + "🖤".repeat(5 - hearts);
-
-  $("score").textContent = "คะแนน " + score;
-
-}
-
-function shuffle(list) {
-
-  return [...list].sort(() => Math.random() - 0.5);
-
-}
-
-async function loadPhoto(place) {
-
-  const img = $("photo");
-
-  img.src = "";
-
-  $("photoNote").textContent = "กำลังค้นหารูปภาพ...";
-
-  try {
-
-    const query = encodeURIComponent(place[0] + " " + place[1] + " Thailand");
-
-    const url = "https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=" +
-
-      query + "&gsrnamespace=6&gsrlimit=10&prop=imageinfo&iiprop=url&iiurlwidth=900&format=json&origin=*";
-
-    const response = await fetch(url);
-
-    const data = await response.json();
-
-    const pages = Object.values(data.query?.pages || {});
-
-    const found = pages.find(p => p.imageinfo?.[0]?.thumburl);
-
-    if (found) {
-
-      img.src = found.imageinfo[0].thumburl;
-
-      $("photoNote").textContent = "ภาพจาก Wikimedia Commons";
-
-    } else {
-
-      $("photoNote").textContent = "ยังไม่พบภาพของสถานที่นี้";
-</script>
-
-</body>
-
-</html>
+["อุทยานแห่งชาติเขาใหญ่","นครราชสีมา"],
